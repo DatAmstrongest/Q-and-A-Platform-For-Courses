@@ -2,22 +2,9 @@
   import { userUuid } from "../stores/stores.js";
   
   const askSomething = async () => {
-    const data = {
-      user: $userUuid,
-      question: "???",
-    };
-    
-    const response = await fetch("/api/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    const jsonData = await response.json();
-    console.log(jsonData);
-    alert(JSON.stringify(jsonData));
+    const response = await fetch("/api/courses");
+    const jsonResponse = await response.json();
+    console.log(jsonResponse);
   };
 </script>
 
