@@ -9,6 +9,7 @@ const handleGetCourses = async (request) => {
 
 
 const handleRequest = async (request) => {
+  console.log("ameno")
   const mapping = urlMapping.find(
     (um) => um.method === request.method && um.pattern.test(request.url)
   );
