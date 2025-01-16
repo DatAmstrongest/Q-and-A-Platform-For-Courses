@@ -8,3 +8,4 @@ const getAllCourses = async () => {
 
 
 export { getAllCourses };
+ 

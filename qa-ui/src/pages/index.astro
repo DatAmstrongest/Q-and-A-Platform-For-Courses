@@ -1,17 +1,15 @@
 ---
 import Layout from "../layout/Layout.astro";
 import CourseList from "../components/CourseList.svelte";
-import TestButton from "../components/TestButton.svelte";
 
 
 ---
 
 <Layout>
-  <!-- 
-  <TestButton client:only={"svelte"} />
-  -->
-  <section class="p-4 max-w-4xl mx-auto">
-    <h1 class="text-2xl font-bold mb-4">Available Courses</h1>
-    <CourseList client:only={"svelte"}/>
-  </section>
+  <!-- Header -->
+  <header class="bg-indigo-600 text-white py-6 text-center">
+    <h1 class="text-3xl font-semibold">Available Courses</h1>
+    <p class="mt-2 text-lg">Select a course to explore questions and answers</p>
+  </header>
+  <CourseList client:only={"svelte"}/>
 </Layout>

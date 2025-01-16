@@ -1,0 +1,19 @@
+---
+import { Astro } from '@astro/runtime';
+import Layout from "../../layout/Layout.astro";
+import QuestionList from "../../components/QuestionList.svelte";
+
+
+//const course_id = Astro.params.id;
+const course_id = Astro.params.id;
+const url = new URL(Astro.request.url);
+const course_name = url.searchParams.get('course_name');
+---
+<Layout>
+     <!-- Header -->
+    <header class="bg-indigo-600 text-white py-6 text-center">
+        <h1 class="text-3xl font-semibold">{course_name}</h1>
+        <p class="mt-2 text-lg">Ask questions and browse answers related to this course</p>
+    </header>
+    <QuestionList client:only={"svelte"} course_id={course_id}></QuestionList> 
+  </Layout>
