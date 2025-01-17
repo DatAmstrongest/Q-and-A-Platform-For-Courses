@@ -11,7 +11,7 @@ const getQuestionsOfGivenCourse = async (course_id, user_id) => {
         WHEN EXISTS (
             SELECT 1 
             FROM question_upvotes qu_inner 
-            WHERE qu_inner.question_id = q.id AND qu_inner.user_id = ${user_id}
+            WHERE qu_inner.question_id = q.id AND qu_inner.user_uuid = ${user_id}
         ) THEN true
         ELSE false
     END AS user_liked

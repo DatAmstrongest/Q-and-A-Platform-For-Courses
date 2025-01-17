@@ -8,7 +8,7 @@ CREATE TABLE questions (
     id SERIAL PRIMARY KEY,
     course_id INT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
-    user_uuid UUID NOT NULL,
+    user_uuid TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     last_upvote_at TIMESTAMP DEFAULT NOW()
 );
@@ -17,7 +17,7 @@ CREATE TABLE answers (
     id SERIAL PRIMARY KEY,
     question_id INT NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
-    user_uuid UUID NOT NULL,
+    user_uuid TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     last_upvote_at TIMESTAMP DEFAULT NOW()
 );
@@ -25,15 +25,15 @@ CREATE TABLE answers (
 CREATE TABLE question_upvotes (
     id SERIAL PRIMARY KEY,
     question_id INT NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
-    user_id INT NOT NULL,
-    UNIQUE(question_id, user_id)
+    user_uuid TEXT NOT NULL,
+    UNIQUE(question_id, user_uuid)
 );
 
 CREATE TABLE answer_upvotes (
     id SERIAL PRIMARY KEY,
     answer_id INT NOT NULL REFERENCES answers(id) ON DELETE CASCADE,
-    user_id INT NOT NULL,
-    UNIQUE(answer_id, user_id)
+    user_uuid TEXT NOT NULL,
+    UNIQUE(answer_id, user_uuid)
 );
 
 -- Indexes for sorting by recency

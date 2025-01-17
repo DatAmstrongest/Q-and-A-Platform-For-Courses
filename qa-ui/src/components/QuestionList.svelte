@@ -2,28 +2,21 @@
   import QuestionCard from "./QuestionCard.svelte"
   import { userUuid } from "../stores/stores.js";
 
-  import { onMount } from "svelte";
   
   export let course_id;
 
   let questions = [];
   
   const getQuestions = async () => {
-    const res = await fetch('/api/courses/'+course_id+'/questions?user_id='+$userUuid);
+    const res = await fetch('/api/courses/'+course_id+'/questions?user_uuid='+$userUuid);
     const questionsData = await res.json();
-    console.log(questionsData);
     questions = questionsData;
+    console.log(questions)
     return questions;
   };
 
   const questionsPromise = getQuestions();
-
-
-    
 </script>
-
-
-
 
   <!-- Main Content -->
   <main class="my-8 px-4">
@@ -39,7 +32,7 @@
       {#await questionsPromise}
       {:then questions}
         {#each questions as question}
-          <QuestionCard question={question.content} upvotes={question.total_votes} isLiked={question.user_liked}> </QuestionCard>
+          <QuestionCard question={question.content} upvotes={question.total_votes} isLiked={question.user_liked} questionId={question.id}> </QuestionCard>
         {/each}
       {/await}
     </section>
@@ -58,6 +51,3 @@
       </div>
     </div>
   </main>
-
-  
-

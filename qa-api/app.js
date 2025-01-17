@@ -1,7 +1,8 @@
 import { serve } from "./deps.js";
 
-import * as coursesService from "./services/coursesService.js"
-import * as questionsService from "./services/questionsService.js"
+import * as coursesService from "./services/coursesService.js";
+import * as questionsService from "./services/questionsService.js";
+import * as upvotesService from "./services/upvotesService.js";
 
 
 const handleGetCourses = async (request) => {
@@ -9,15 +10,24 @@ const handleGetCourses = async (request) => {
   return Response.json(courses);
 }
 
-const handleGetQuestions = async (request, urlPatternResult) => {
+const handleGetQuestionsOfCourse = async (request, urlPatternResult) => {
   const url = new URL(request.url);
   const params = new URLSearchParams(url.search);
-  const user_uuid = params.get('user');
+  const user_uuid = params.get('user_uuid');
   const course_id = urlPatternResult.pathname.groups.course_id;
 
   const questions = await questionsService.getQuestionsOfGivenCourse(course_id, user_uuid);
   return Response.json(questions);
 
+}
+
+const handleLikeQuestion = async (request, urlPatternResult) =>{
+  const requestData = await request.json();
+  const user_id = requestData.user_id;
+  const question_id = urlPatternResult.pathname.groups.question_id;
+
+  await upvotesService.createQuestionUpvote(question_id, user_id)
+  return new Response("OK", { status: 200 });
 }
 
 
@@ -48,7 +58,13 @@ const urlMapping = [
   {
     method: "GET",
     pattern: new URLPattern({pathname:"/courses/:course_id/questions"}),
-    fn: handleGetQuestions,
+    search: "*",
+    fn: handleGetQuestionsOfCourse,
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({pathname:"/questions/:question_id/like"}),
+    fn: handleLikeQuestion
   }
 
 ];
