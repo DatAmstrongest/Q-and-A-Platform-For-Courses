@@ -3,32 +3,21 @@ import { serve } from "./deps.js";
 import * as coursesService from "./services/coursesService.js"
 import * as questionsService from "./services/questionsService.js"
 
+
 const handleGetCourses = async (request) => {
   const courses = await coursesService.getAllCourses();
   return Response.json(courses);
 }
 
 const handleGetQuestions = async (request, urlPatternResult) => {
-  let interval;
+  const url = new URL(request.url);
+  const params = new URLSearchParams(url.search);
+  const user_uuid = params.get('user');
   const course_id = urlPatternResult.pathname.groups.course_id;
-  const body = new ReadableStream({
-    start(controller) {
-      interval = setInterval(async ()  => {
-        const questions = await questionsService.getQuestionsOfGivenCourse(course_id);
-        const message = `data: ${JSON.stringify(questions)}\n\n`;
-        controller.enqueue(new TextEncoder().encode(message));
-      }, 1000);
-    },
-    cancel() {
-      clearInterval(interval);
-    },
-  });
 
-  return new Response(body, {
-    headers: {
-      "Content-Type": "text/event-stream",
-    },
-  });
+  const questions = await questionsService.getQuestionsOfGivenCourse(course_id, user_uuid);
+  return Response.json(questions);
+
 }
 
 

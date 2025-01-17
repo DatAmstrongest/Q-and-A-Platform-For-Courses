@@ -1,5 +1,6 @@
 <script>
   import CourseCard from "./CourseCard.svelte"
+  
   const getCourses = async () => {
     const res = await fetch('/api/courses');
     const courses = await res.json();
