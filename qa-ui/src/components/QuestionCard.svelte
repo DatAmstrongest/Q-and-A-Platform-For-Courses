@@ -6,11 +6,8 @@
     export let isLiked;
     export let questionId;
 
-    let fillColor = "none"
-
     let localUpvotes = parseInt(upvotes, 10); 
     const handleUpvote = async () =>{
-        fillColor="#4F46E5FF";
         localUpvotes += 1;
         isLiked = true;
 

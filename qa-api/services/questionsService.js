@@ -25,7 +25,13 @@ const getQuestionsOfGivenCourse = async (course_id, user_id) => {
     q.id, q.content`;
 };
 
+const createQuestion = async (user_uuid, content, course_id) => {
+  return await sql`
+  INSERT INTO questions(user_uuid, content, course_id) 
+  VALUES(${user_uuid}, ${content}, ${course_id});`
+}
 
 
-export { getQuestionsOfGivenCourse };
+
+export { getQuestionsOfGivenCourse, createQuestion };
  

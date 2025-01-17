@@ -21,12 +21,24 @@ const handleGetQuestionsOfCourse = async (request, urlPatternResult) => {
 
 }
 
+// TODO: Last upvote'u düzelt
 const handleLikeQuestion = async (request, urlPatternResult) =>{
   const requestData = await request.json();
   const user_id = requestData.user_id;
   const question_id = urlPatternResult.pathname.groups.question_id;
 
   await upvotesService.createQuestionUpvote(question_id, user_id)
+  return new Response("OK", { status: 200 });
+}
+
+const handlePostQuestion = async (request) =>{
+  const requestData = await request.json();
+  const user_uuid = requestData.user_uuid;
+  const content = requestData.content;
+  const course_id = requestData.course_id;
+  console.log(user_uuid, content, course_id)
+  await questionsService.createQuestion(user_uuid, content, course_id);
+  console.log("a")
   return new Response("OK", { status: 200 });
 }
 
@@ -65,6 +77,11 @@ const urlMapping = [
     method: "POST",
     pattern: new URLPattern({pathname:"/questions/:question_id/like"}),
     fn: handleLikeQuestion
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({pathname:"/questions"}),
+    fn: handlePostQuestion
   }
 
 ];
