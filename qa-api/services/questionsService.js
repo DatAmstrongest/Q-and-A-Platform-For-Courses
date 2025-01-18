@@ -34,7 +34,13 @@ const createQuestion = async (user_uuid, content, course_id) => {
   VALUES(${user_uuid}, ${content}, ${course_id});`
 }
 
+const updateUpdatedAt = async(question_id) =>{
+  return await sql`
+  UPDATE questions set updated_at = NOW() WHERE id=${question_id};
+  `;
+}
 
 
-export { getQuestionsOfGivenCourse, createQuestion };
+
+export { getQuestionsOfGivenCourse, createQuestion , updateUpdatedAt };
  

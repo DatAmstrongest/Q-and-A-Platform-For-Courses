@@ -29,6 +29,7 @@ const handleLikeQuestion = async (request, urlPatternResult) =>{
   const question_id = urlPatternResult.pathname.groups.question_id;
 
   await upvotesService.createQuestionUpvote(question_id, user_id)
+  await questionsService.updateUpdatedAt(question_id)
   return new Response("OK", { status: 200 });
 }
 
