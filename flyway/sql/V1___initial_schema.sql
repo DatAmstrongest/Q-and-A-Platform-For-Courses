@@ -10,7 +10,7 @@ CREATE TABLE questions (
     content TEXT NOT NULL,
     user_uuid TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
-    last_upvote_at TIMESTAMP DEFAULT NOW()
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE answers (
@@ -19,7 +19,7 @@ CREATE TABLE answers (
     content TEXT NOT NULL,
     user_uuid TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
-    last_upvote_at TIMESTAMP DEFAULT NOW()
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE question_upvotes (
@@ -37,5 +37,5 @@ CREATE TABLE answer_upvotes (
 );
 
 -- Indexes for sorting by recency
-CREATE INDEX idx_questions_recency ON questions((GREATEST(created_at, last_upvote_at)) DESC);
-CREATE INDEX idx_answers_recency ON answers((GREATEST(created_at, last_upvote_at)) DESC);
+CREATE INDEX idx_questions_recency ON questions((updated_at) DESC);
+CREATE INDEX idx_answers_recency ON answers((updated_at) DESC);

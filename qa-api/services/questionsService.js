@@ -1,11 +1,12 @@
 import { sql } from "../database/database.js";
 
 
-const getQuestionsOfGivenCourse = async (course_id, user_id) => {
+const getQuestionsOfGivenCourse = async (course_id, user_id, page) => {
   return await sql`
   SELECT 
     q.id AS id,
     q.content AS content,
+    q.updated_at AS updated_at,
     COUNT(qu.id) AS total_votes,
     CASE 
         WHEN EXISTS (
@@ -22,7 +23,9 @@ const getQuestionsOfGivenCourse = async (course_id, user_id) => {
   WHERE 
     q.course_id = ${course_id}
   GROUP BY 
-    q.id, q.content`;
+    q.id, q.content
+  ORDER BY updated_at DESC
+  LIMIT (20*${page});`;
 };
 
 const createQuestion = async (user_uuid, content, course_id) => {

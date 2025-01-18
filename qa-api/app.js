@@ -14,9 +14,10 @@ const handleGetQuestionsOfCourse = async (request, urlPatternResult) => {
   const url = new URL(request.url);
   const params = new URLSearchParams(url.search);
   const user_uuid = params.get('user_uuid');
+  let page = params.get('page');
   const course_id = urlPatternResult.pathname.groups.course_id;
 
-  const questions = await questionsService.getQuestionsOfGivenCourse(course_id, user_uuid);
+  const questions = await questionsService.getQuestionsOfGivenCourse(course_id, user_uuid, page);
   return Response.json(questions);
 
 }
@@ -36,9 +37,8 @@ const handlePostQuestion = async (request) =>{
   const user_uuid = requestData.user_uuid;
   const content = requestData.content;
   const course_id = requestData.course_id;
-  console.log(user_uuid, content, course_id)
+
   await questionsService.createQuestion(user_uuid, content, course_id);
-  console.log("a")
   return new Response("OK", { status: 200 });
 }
 
