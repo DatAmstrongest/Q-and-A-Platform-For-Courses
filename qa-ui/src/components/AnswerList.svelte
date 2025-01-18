@@ -14,6 +14,10 @@
     let container;
     let isLoading;
     let hasMore;
+
+    const returnBack = () =>{
+        history.back();
+    }
     
     const getAnswers = async () => {
   
@@ -79,8 +83,8 @@
   
       <!-- Button to Give New Answer -->
       <div class="flex justify-between items-center mb-6">
-        <a href="/" class="bg-gray-300 text-gray-800 py-2 px-6 rounded-lg hover:bg-gray-400 transition-all duration-300">&larr; Back to Question List</a>
-        <button on:click={toggleModal} data-modal-target="AnswerModal" data-modal-toggle="AnswerModal" class="bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition-all duration-300">Ask a New Question</button>
+        <a on:click={returnBack} class="bg-gray-300 text-gray-800 py-2 px-6 rounded-lg hover:bg-gray-400 transition-all duration-300">&larr; Back to Question List</a>
+        <button on:click={toggleModal} data-modal-target="AnswerModal" data-modal-toggle="AnswerModal" class="bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition-all duration-300">Give an Answer</button>
     
       </div>
   
