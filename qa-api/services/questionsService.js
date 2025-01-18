@@ -1,6 +1,5 @@
 import { sql } from "../database/database.js";
 
-
 const getQuestionsOfGivenCourse = async (course_id, user_id, page) => {
   return await sql`
   SELECT 
@@ -47,8 +46,6 @@ const updateUpdatedAt = async(question_id) =>{
   UPDATE questions set updated_at = NOW() WHERE id=${question_id};
   `;
 }
-
-
 
 export { getQuestionsOfGivenCourse, createQuestion, updateUpdatedAt, getLastQuestionOfUser };
  

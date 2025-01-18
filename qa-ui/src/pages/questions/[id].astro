@@ -1,0 +1,17 @@
+---
+import { Astro } from '@astro/runtime';
+import Layout from "../../layout/Layout.astro";
+import AnswerList from "../../components/AnswerList.svelte";
+
+const question_id = Astro.params.id;
+const url = new URL(Astro.request.url);
+const question_content = url.searchParams.get('question_content');
+---
+<Layout>
+    <!-- Header -->
+   <header class="bg-indigo-600 text-white py-6 text-center">
+       <h1 class="text-3xl font-semibold">{question_content}</h1>
+       <p class="mt-2 text-lg">See Answers and Give Answers to the Question</p>
+   </header>
+   <AnswerList client:only={"svelte"} question_id={question_id}></QuestionList> 
+ </Layout>

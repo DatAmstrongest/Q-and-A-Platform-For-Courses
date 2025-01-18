@@ -3,8 +3,6 @@ import { Astro } from '@astro/runtime';
 import Layout from "../../layout/Layout.astro";
 import QuestionList from "../../components/QuestionList.svelte";
 
-
-//const course_id = Astro.params.id;
 const course_id = Astro.params.id;
 const url = new URL(Astro.request.url);
 const course_name = url.searchParams.get('course_name');

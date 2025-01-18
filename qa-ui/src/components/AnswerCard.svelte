@@ -1,10 +1,10 @@
 <script>
     import { userUuid } from "../stores/stores.js";
     
-    export let question;
+    export let answer;
     export let upvotes;
     export let isLiked;
-    export let questionId;
+    export let answerId;
 
     let localUpvotes = parseInt(upvotes, 10); 
     const handleUpvote = async () =>{
@@ -14,20 +14,19 @@
         let data = {
           user_id: $userUuid,
         }
-        await fetch("/api/questions/"+questionId+"/like", {
+        await fetch("/api/answers/"+answerId+"/like", {
           method: "POST",
           body: JSON.stringify(data),
         });
     }
     const urlParams = new URLSearchParams(window.location.search);
-    let course_name = urlParams.get('course_name') || 'No query parameter found';
 
 </script>
 
 <div class="bg-white text-gray-800 rounded-lg p-6 shadow-lg transition-all duration-300 ease-in-out">
     <div class="flex justify-between items-center">
       <div>
-        <h3 class="text-xl font-semibold mb-2">{question}</h3>
+        <h3 class="text-xl font-semibold mb-2">{answer}</h3>
       </div>
       <div class="flex items-center">
         <!-- Upvote button with counter -->
@@ -47,5 +46,4 @@
         <span class="ml-2 text-sm text-gray-600">{localUpvotes}</span> <!-- Upvote Count -->
       </div>
     </div>
-    <a href="/questions/{questionId}?question_content={question}"  class="text-indigo-600 hover:underline">View Answers</a>
   </div>

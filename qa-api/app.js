@@ -4,10 +4,12 @@ import EventEmitter from 'https://esm.sh/eventemitter3';
 import * as coursesService from "./services/coursesService.js";
 import * as questionsService from "./services/questionsService.js";
 import * as upvotesService from "./services/upvotesService.js";
+import * as answersService from "./services/answersService.js";
 
 const questionEvents = new EventEmitter();
+const answerEvents = new EventEmitter();
 
-const handleSSE = async (request, urlPatternResult) => {
+const handleQuestionsSSE = async (request, urlPatternResult) => {
   // Extract the course_id from the URL
   const course_id = urlPatternResult.pathname.groups.course_id;
   // Create a ReadableStream to send events to the client
@@ -86,6 +88,79 @@ const handlePostQuestion = async (request) =>{
   return new Response("OK", { status: 200 });
 }
 
+const handleGetAnswersOfQuestion = async (request, urlPatternResult) => {
+  const url = new URL(request.url);
+  const params = new URLSearchParams(url.search);
+  const user_uuid = params.get('user_uuid');
+  let page = params.get('page');
+  const question_id = urlPatternResult.pathname.groups.question_id;
+
+  const answers = await answersService.getAnswersOfGivenQuestion(question_id, user_uuid, page);
+  return Response.json(answers);
+}
+
+const handleAnswersSSE = async (request, urlPatternResult) => {
+  // Extract the question_id from the URL
+  const question_id = urlPatternResult.pathname.groups.question_id;
+  // Create a ReadableStream to send events to the client
+  const body = new ReadableStream({
+    start(controller) {
+      // Function to send new questions as events
+      const sendEvent = (newAnswer) => {
+        try{
+          const message = `data: ${JSON.stringify(newAnswer)}\n\n`;
+          controller.enqueue(new TextEncoder().encode(message));
+        }
+        catch(e){ 
+          console.log(e);
+        }
+        
+      };
+
+      // Subscribe to "newQuestion" events for the specific course
+      answerEvents.on(question_id, sendEvent);
+
+      // Handle stream closure when the client disconnects
+      request.signal?.addEventListener("abort", () => {
+        questionEvents.off(course_id, sendEvent);
+        controller.close();
+      });
+    },
+  });
+
+  // Return the response with appropriate headers for SSE
+  return new Response(body, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      "Connection": "keep-alive"
+    },
+  });
+};
+
+const handleLikeAnswer = async (request, urlPatternResult) =>{
+  const requestData = await request.json();
+  const user_id = requestData.user_id;
+  const answer_id = urlPatternResult.pathname.groups.answer_id;
+
+  await upvotesService.createAnswerUpvote(answer_id, user_id)
+  await answersService.updateUpdatedAt(answer_id)
+  return new Response("OK", { status: 200 });
+}
+
+const handlePostAnswer = async (request) =>{
+  const requestData = await request.json();
+  const user_uuid = requestData.user_uuid;
+  const content = requestData.content;
+  const question_id = requestData.question_id;
+
+  await answersService.createAnswer(user_uuid, content, question_id)
+  const answer = await answersService.getLastAnswerOfUser(user_uuid);
+  answerEvents.emit(question_id.toString(), answer[0]);
+
+  return new Response("OK", { status: 200 });
+}
+
 
 
 const handleRequest = async (request) => {
@@ -114,14 +189,14 @@ const urlMapping = [
   },
   {
     method: "GET",
-    pattern: new URLPattern({pathname: "/courses/:course_id/sse"}),
-    fn: handleSSE
-  },
-  {
-    method: "GET",
     pattern: new URLPattern({pathname:"/courses/:course_id/questions"}),
     search: "*",
     fn: handleGetQuestionsOfCourse,
+  },
+  {
+    method: "GET",
+    pattern: new URLPattern({pathname: "/courses/:course_id/questions/sse"}),
+    fn: handleQuestionsSSE
   },
   {
     method: "POST",
@@ -132,6 +207,27 @@ const urlMapping = [
     method: "POST",
     pattern: new URLPattern({pathname:"/questions"}),
     fn: handlePostQuestion
+  },
+  {
+    method: "GET",
+    pattern: new URLPattern({pathname:"/questions/:question_id/answers"}),
+    fn: handleGetAnswersOfQuestion
+  },
+  {
+    method: "GET",
+    pattern: new URLPattern({pathname:"/questions/:question_id/answers/sse"}),
+    fn: handleAnswersSSE
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({pathname:"/answers/:answer_id/like"}),
+    fn: handleLikeAnswer
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({pathname:"/answers"}),
+    fn: handlePostAnswer
+
   }
 
 ];
