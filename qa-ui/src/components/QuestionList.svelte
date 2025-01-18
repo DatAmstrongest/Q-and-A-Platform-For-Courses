@@ -9,7 +9,6 @@
 
   let questions = [];
   let showModal = false;
-  let questionInput='';
 
   let page = 1;
   let container;
@@ -31,20 +30,6 @@
     showModal = !showModal;
   }
 
-  const submitQuestion = async () =>{
-    let data = {
-      user_uuid: $userUuid,
-      content: questionInput,
-      course_id: course_id,
-    }
-
-    await fetch("/api/questions", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-  }
-
-  let questionsPromise = getQuestions();
 
   async function handleScroll(event) {
     if (!isLoading && hasMore && container.scrollTop + container.clientHeight >= container.scrollHeight - 10) {
@@ -54,8 +39,34 @@
   }
 
   onMount(() => {
+    getQuestions();
+    const eventSource = new EventSource(`/api/courses/${course_id}/sse`);
+
+    eventSource.onmessage = (event) => {
+      try {
+        const newQuestion = JSON.parse(event.data);
+        console.log(newQuestion);
+        questions = [newQuestion, ...questions];
+      } catch (error) {
+        console.error("Failed to parse SSE data:", error);
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("SSE error:", error);
+      // Optionally close the connection if needed
+      eventSource.close();
+    };
+
+    // Optional: Cleanup when the component or page unloads
+    window.addEventListener("beforeunload", () => {
+      eventSource.close();
+    });
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+
+
   });
 
 </script>
@@ -71,14 +82,11 @@
 
     <!-- Question List -->
     <section class="space-y-6">
-      {#await questionsPromise}
-      {:then questions}
         <div class="grid grid-cols-4 gap-4">
           {#each questions as question}
             <QuestionCard question={question.content} upvotes={question.total_votes} isLiked={question.user_liked} questionId={question.id}> </QuestionCard>
           {/each}
         </div>
-      {/await}
     </section>
     {#if showModal}
       <AskQuestionModal toggleModal={toggleModal} course_id={course_id}></AskQuestionModal>

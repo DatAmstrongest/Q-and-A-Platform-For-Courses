@@ -6,7 +6,6 @@ const getQuestionsOfGivenCourse = async (course_id, user_id, page) => {
   SELECT 
     q.id AS id,
     q.content AS content,
-    q.updated_at AS updated_at,
     COUNT(qu.id) AS total_votes,
     CASE 
         WHEN EXISTS (
@@ -28,6 +27,15 @@ const getQuestionsOfGivenCourse = async (course_id, user_id, page) => {
   LIMIT (20*${page});`;
 };
 
+const getLastQuestionOfUser = async (user_uuid) =>{
+  return await sql`
+  SELECT * from questions 
+    WHERE user_uuid=${user_uuid}
+    ORDER BY id DESC
+    LIMIT 1;
+  `;
+}
+
 const createQuestion = async (user_uuid, content, course_id) => {
   return await sql`
   INSERT INTO questions(user_uuid, content, course_id) 
@@ -42,5 +50,5 @@ const updateUpdatedAt = async(question_id) =>{
 
 
 
-export { getQuestionsOfGivenCourse, createQuestion , updateUpdatedAt };
+export { getQuestionsOfGivenCourse, createQuestion, updateUpdatedAt, getLastQuestionOfUser };
  

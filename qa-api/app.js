@@ -1,9 +1,50 @@
 import { serve } from "./deps.js";
+import EventEmitter from 'https://esm.sh/eventemitter3';
 
 import * as coursesService from "./services/coursesService.js";
 import * as questionsService from "./services/questionsService.js";
 import * as upvotesService from "./services/upvotesService.js";
 
+const questionEvents = new EventEmitter();
+
+const handleSSE = async (request, urlPatternResult) => {
+  // Extract the course_id from the URL
+  const course_id = urlPatternResult.pathname.groups.course_id;
+  // Create a ReadableStream to send events to the client
+  const body = new ReadableStream({
+    start(controller) {
+      // Function to send new questions as events
+      const sendEvent = (newQuestion) => {
+        try{
+          const message = `data: ${JSON.stringify(newQuestion)}\n\n`;
+          controller.enqueue(new TextEncoder().encode(message));
+        }
+        catch(e){
+          console.log(e);
+        }
+        
+      };
+
+      // Subscribe to "newQuestion" events for the specific course
+      questionEvents.on(course_id, sendEvent);
+
+      // Handle stream closure when the client disconnects
+      request.signal?.addEventListener("abort", () => {
+        questionEvents.off(course_id, sendEvent);
+        controller.close();
+      });
+    },
+  });
+
+  // Return the response with appropriate headers for SSE
+  return new Response(body, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      "Connection": "keep-alive"
+    },
+  });
+};
 
 const handleGetCourses = async (request) => {
   const courses = await coursesService.getAllCourses();
@@ -22,7 +63,6 @@ const handleGetQuestionsOfCourse = async (request, urlPatternResult) => {
 
 }
 
-// TODO: Last upvote'u düzelt
 const handleLikeQuestion = async (request, urlPatternResult) =>{
   const requestData = await request.json();
   const user_id = requestData.user_id;
@@ -40,6 +80,9 @@ const handlePostQuestion = async (request) =>{
   const course_id = requestData.course_id;
 
   await questionsService.createQuestion(user_uuid, content, course_id);
+  const question = await questionsService.getLastQuestionOfUser(user_uuid);
+  questionEvents.emit(course_id.toString(), question[0]);
+
   return new Response("OK", { status: 200 });
 }
 
@@ -63,10 +106,16 @@ const handleRequest = async (request) => {
 };
 
 const urlMapping = [
+
   {
     method: "GET",
     pattern: new URLPattern({pathname: "/courses"}),
     fn: handleGetCourses,
+  },
+  {
+    method: "GET",
+    pattern: new URLPattern({pathname: "/courses/:course_id/sse"}),
+    fn: handleSSE
   },
   {
     method: "GET",
