@@ -1,22 +1,23 @@
 <script>
   import QuestionCard from "./QuestionCard.svelte"
   import QuestionModal from "./QuestionModal.svelte"
-  import { onMount } from "svelte";
+  import ErrorPopup from "./ErrorPopup.svelte";
 
+  import { onMount } from "svelte";
   import { userUuid } from "../stores/stores.js";
   
   export let course_id;
 
   let questions = [];
   let showModal = false;
+  let showError = false;
+  let errorMessage = '';
 
   let page = 1;
-  let container;
   let isLoading;
   let hasMore;
   
   const getQuestions = async () => {
-
     isLoading = true;
     const res = await fetch('/api/courses/'+course_id+'/questions?user_uuid='+$userUuid+'&page='+page.toString());
     const questionsData = await res.json();
@@ -39,6 +40,11 @@
       page += 1;
       getQuestions();
     }
+  }
+
+  const handleError = (message) =>{
+    errorMessage = message;
+    showError = true;
   }
 
   onMount(() => {
@@ -74,7 +80,7 @@
 </script>
 
   <!-- Main Content -->
-  <main class="my-8 px-8" bind:this={container}>
+  <main class="my-8 px-8">
 
     <!-- Button to Ask New Question -->
     <div class="flex justify-between items-center mb-6">
@@ -92,6 +98,9 @@
         </div>
     </section>
     {#if showModal}
-      <QuestionModal toggleModal={toggleModal} course_id={course_id}></QuestionModal>
+      <QuestionModal toggleModal={toggleModal} course_id={course_id} handleError={handleError}></QuestionModal>
+    {/if}
+    {#if showError}
+      <ErrorPopup message={errorMessage} onClose={() => (showError = false)} />
     {/if}
   </main>

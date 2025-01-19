@@ -3,6 +3,7 @@
 
     export let course_id;
     export let toggleModal;
+    export let handleError;
 
     let questionInput='';
 
@@ -14,10 +15,14 @@
         course_id: course_id,
       }
 
-      await fetch("/api/questions", {
+      const response = await fetch("/api/questions", {
         method: "POST",
         body: JSON.stringify(data),
       });
+      if (response.status === 403) {
+        const jsonResponse = await response.json();
+        handleError(jsonResponse.error)
+      }
       toggleModal();
   }
 </script>

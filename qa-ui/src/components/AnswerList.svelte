@@ -1,17 +1,19 @@
 <script>
     import AnswerCard from "./AnswerCard.svelte"
     import AnswerModal from "./AnswerModal.svelte"
+    import ErrorPopup from "./ErrorPopup.svelte";
+
     import { onMount } from "svelte";
-  
     import { userUuid } from "../stores/stores.js";
     
     export let question_id;
   
     let answers = [];
     let showModal = false;
+    let showError = false;
+    let errorMessage = '';
   
     let page = 1;
-    let container;
     let isLoading;
     let hasMore;
 
@@ -20,13 +22,11 @@
     }
     
     const getAnswers = async () => {
-  
       isLoading = true;
       const res = await fetch('/api/questions/'+question_id+'/answers?user_uuid='+$userUuid+'&page='+page.toString());
       const answersData = await res.json();
       hasMore = (answersData.length - answers.length) >= 20;
       answers = [...answersData];
-      console.log(answers);
       isLoading = false;
       return answers;
     };
@@ -44,6 +44,11 @@
         page += 1;
         getAnswers();
       }
+    }
+
+    const handleError = (message) =>{
+      errorMessage = message;
+      showError = true;
     }
   
     onMount(() => {
@@ -79,7 +84,7 @@
   </script>
   
     <!-- Main Content -->
-    <main class="my-8 px-8" bind:this={container}>
+    <main class="my-8 px-8">
   
       <!-- Button to Give New Answer -->
       <div class="flex justify-between items-center mb-6">
@@ -97,6 +102,9 @@
           </div>
       </section>
       {#if showModal}
-        <AnswerModal toggleModal={toggleModal} question_id={question_id}></AnswerModal>
+        <AnswerModal toggleModal={toggleModal} question_id={question_id} handleError={handleError}></AnswerModal>
+      {/if}
+      {#if showError}
+        <ErrorPopup message={errorMessage} onClose={() => (showError = false)} />
       {/if}
     </main>

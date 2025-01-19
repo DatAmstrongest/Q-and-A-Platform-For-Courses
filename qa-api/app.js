@@ -19,7 +19,6 @@ const sendQuestionToLLM = async (question) => {
       body: JSON.stringify({"question":question["content"]}),
     });
     const responseJson = await response.json();
-    console.log(responseJson);
     const requestData = {
       "question_id": question["id"],
       "user_uuid": "LLM",
@@ -101,6 +100,15 @@ const handlePostQuestion = async (request) =>{
   const user_uuid = requestData.user_uuid;
   const content = requestData.content;
   const course_id = requestData.course_id;
+  
+  const lastQuestion = await questionsService.getLastQuestionOfUser(user_uuid)
+  if (lastQuestion.length > 0){
+    let last_question_time = new Date(lastQuestion[0].created_at);
+    let currentTime = new Date()
+    if ((currentTime.getTime()/60000 - last_question_time.getTime()/60000 < 1)){
+      return new Response(JSON.stringify({ error: "You can only post one question every minute. Please try again later." }), { status: 403 });
+    }
+  }
 
   await questionsService.createQuestion(user_uuid, content, course_id);
   const question = await questionsService.getLastQuestionOfUser(user_uuid);
@@ -174,7 +182,7 @@ const handlePostAnswer = async (request, givenData=null) =>{
   let user_uuid;
   let content;
   let question_id
-  if (givenData != null){
+  if (givenData.content !== undefined){
     user_uuid = givenData.user_uuid;
     content = givenData.content;
     question_id = givenData.question_id;
@@ -185,6 +193,15 @@ const handlePostAnswer = async (request, givenData=null) =>{
     content = requestData.content;
     question_id = requestData.question_id;
 
+  }
+
+  const lastAnswer = await answersService.getLastAnswerOfUser(user_uuid);
+  if (lastAnswer.length > 0){
+    let last_answer_time = new Date(lastAnswer[0].created_at);
+    let currentTime = new Date()
+    if ((currentTime.getTime()/60000 - last_answer_time.getTime()/60000 < 1) && (givenData.content === undefined)){
+      return new Response(JSON.stringify({error:"You can only post one answer every minute. Please try again later."}), { status: 403 });
+    }
   }
 
   await answersService.createAnswer(user_uuid, content, question_id)
