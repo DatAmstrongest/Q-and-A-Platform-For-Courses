@@ -9,6 +9,27 @@ import * as answersService from "./services/answersService.js";
 const questionEvents = new EventEmitter();
 const answerEvents = new EventEmitter();
 
+const sendQuestionToLLM = async (question) => {
+  for (let i=0; i<3; i++){
+    const response = await fetch("http://llm-api:7000/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({"question":question["content"]}),
+    });
+    const responseJson = await response.json();
+    console.log(responseJson);
+    const requestData = {
+      "question_id": question["id"],
+      "user_uuid": "LLM",
+      "content": responseJson[0]["generated_text"]
+    };
+    await handlePostAnswer(null, requestData);
+
+  }
+}
+
 const handleQuestionsSSE = async (request, urlPatternResult) => {
   // Extract the course_id from the URL
   const course_id = urlPatternResult.pathname.groups.course_id;
@@ -84,6 +105,7 @@ const handlePostQuestion = async (request) =>{
   await questionsService.createQuestion(user_uuid, content, course_id);
   const question = await questionsService.getLastQuestionOfUser(user_uuid);
   questionEvents.emit(course_id.toString(), question[0]);
+  sendQuestionToLLM(question[0]);
 
   return new Response("OK", { status: 200 });
 }
@@ -148,11 +170,22 @@ const handleLikeAnswer = async (request, urlPatternResult) =>{
   return new Response("OK", { status: 200 });
 }
 
-const handlePostAnswer = async (request) =>{
-  const requestData = await request.json();
-  const user_uuid = requestData.user_uuid;
-  const content = requestData.content;
-  const question_id = requestData.question_id;
+const handlePostAnswer = async (request, givenData=null) =>{
+  let user_uuid;
+  let content;
+  let question_id
+  if (givenData != null){
+    user_uuid = givenData.user_uuid;
+    content = givenData.content;
+    question_id = givenData.question_id;
+  }
+  else{
+    const requestData = await request.json();
+    user_uuid = requestData.user_uuid;
+    content = requestData.content;
+    question_id = requestData.question_id;
+
+  }
 
   await answersService.createAnswer(user_uuid, content, question_id)
   const answer = await answersService.getLastAnswerOfUser(user_uuid);
