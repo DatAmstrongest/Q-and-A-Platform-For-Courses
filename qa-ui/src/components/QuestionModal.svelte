@@ -32,7 +32,7 @@
       <h2 class="text-2xl font-semibold mb-4">Ask a New Question</h2>
       <form on:submit|preventDefault={submitQuestion}>
         <label for="question-body" class="block text-sm font-medium text-gray-700 mt-4">Question</label>
-        <textarea bind:value={questionInput} id="question-body" rows="4" class="mt-1 w-full p-3 border border-gray-300 rounded-lg" placeholder="Describe your question in detail" required></textarea>
+        <textarea bind:value={questionInput} id="question-input" rows="4" class="mt-1 w-full p-3 border border-gray-300 rounded-lg" placeholder="Describe your question in detail" required></textarea>
         <button  class="mt-4 bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition-all duration-300 w-full">Submit Question</button>
       </form>
     </div>
