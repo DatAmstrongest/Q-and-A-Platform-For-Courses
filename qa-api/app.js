@@ -113,8 +113,8 @@ const handlePostQuestion = async (request) =>{
   await questionsService.createQuestion(user_uuid, content, course_id);
   const question = await questionsService.getLastQuestionOfUser(user_uuid);
   question[0].total_votes = 0;
-  questionEvents.emit(course_id.toString(), question[0]);
   sendQuestionToLLM(question[0]);
+  questionEvents.emit(course_id.toString(), question[0]);
 
   return new Response("OK", { status: 200 });
 }

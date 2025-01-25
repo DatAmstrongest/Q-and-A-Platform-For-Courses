@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qa-ui-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qa-ui
+  template:
+    metadata:
+      labels:
+        app: qa-ui
+    spec:
+      containers:
+      - name: prometheus-exporter
+        image: prom/node-exporter  # Or a different exporter
+        ports:
+        - containerPort: 9100
+      - name: qa-ui
+        image: qa-ui:latest 
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
