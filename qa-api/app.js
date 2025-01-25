@@ -1,10 +1,16 @@
 import { serve } from "./deps.js";
 import EventEmitter from 'https://esm.sh/eventemitter3';
+import { cacheMethodCalls } from "./util/cacheUtil.js";
 
 import * as coursesService from "./services/coursesService.js";
 import * as questionsService from "./services/questionsService.js";
 import * as upvotesService from "./services/upvotesService.js";
 import * as answersService from "./services/answersService.js";
+
+const cachedCoursesService = cacheMethodCalls(coursesService, []);
+const cachedQuestionsService = cacheMethodCalls(questionsService, ['createQuestion', 'updateUpdatedAt']);
+const cachedAnswersService = cacheMethodCalls(answersService, ['createAnswer', 'updateUpdatedAt']);
+
 
 const questionEvents = new EventEmitter();
 const answerEvents = new EventEmitter();
@@ -69,7 +75,7 @@ const handleQuestionsSSE = async (request, urlPatternResult) => {
 };
 
 const handleGetCourses = async (request) => {
-  const courses = await coursesService.getAllCourses();
+  const courses = await cachedCoursesService.getAllCourses();
   return Response.json(courses);
 }
 
@@ -80,7 +86,7 @@ const handleGetQuestionsOfCourse = async (request, urlPatternResult) => {
   let page = params.get('page');
   const course_id = urlPatternResult.pathname.groups.course_id;
 
-  const questions = await questionsService.getQuestionsOfGivenCourse(course_id, user_uuid, page);
+  const questions = await cachedQuestionsService.getQuestionsOfGivenCourse(course_id, user_uuid, page);
   return Response.json(questions);
 
 }
@@ -91,7 +97,7 @@ const handleLikeQuestion = async (request, urlPatternResult) =>{
   const question_id = urlPatternResult.pathname.groups.question_id;
 
   await upvotesService.createQuestionUpvote(question_id, user_id)
-  await questionsService.updateUpdatedAt(question_id)
+  await cachedQuestionsService.updateUpdatedAt(question_id)
   return new Response("OK", { status: 200 });
 }
 
@@ -101,7 +107,7 @@ const handlePostQuestion = async (request) =>{
   const content = requestData.content;
   const course_id = requestData.course_id;
   
-  const lastQuestion = await questionsService.getLastQuestionOfUser(user_uuid)
+  const lastQuestion = await cachedQuestionsService.getLastQuestionOfUser(user_uuid)
   if (lastQuestion.length > 0){
     let last_question_time = new Date(lastQuestion[0].created_at);
     let currentTime = new Date()
@@ -110,11 +116,16 @@ const handlePostQuestion = async (request) =>{
     }
   }
 
-  await questionsService.createQuestion(user_uuid, content, course_id);
-  const question = await questionsService.getLastQuestionOfUser(user_uuid);
-  question[0].total_votes = 0;
+  await cachedQuestionsService.createQuestion(user_uuid, content, course_id);
+  const question = await cachedQuestionsService.getLastQuestionOfUser(user_uuid);
+  const data = {
+    "id": question[0].id,
+    "total_votes": "0",
+    "content": question[0].content,
+    "user_liked": false
+  }
   sendQuestionToLLM(question[0]);
-  questionEvents.emit(course_id.toString(), question[0]);
+  questionEvents.emit(course_id.toString(), data);
 
   return new Response("OK", { status: 200 });
 }
@@ -126,7 +137,7 @@ const handleGetAnswersOfQuestion = async (request, urlPatternResult) => {
   let page = params.get('page');
   const question_id = urlPatternResult.pathname.groups.question_id;
 
-  const answers = await answersService.getAnswersOfGivenQuestion(question_id, user_uuid, page);
+  const answers = await cachedAnswersService.getAnswersOfGivenQuestion(question_id, user_uuid, page);
   return Response.json(answers);
 }
 
@@ -175,7 +186,7 @@ const handleLikeAnswer = async (request, urlPatternResult) =>{
   const answer_id = urlPatternResult.pathname.groups.answer_id;
 
   await upvotesService.createAnswerUpvote(answer_id, user_id)
-  await answersService.updateUpdatedAt(answer_id)
+  await cachedAnswersService.updateUpdatedAt(answer_id)
   return new Response("OK", { status: 200 });
 }
 
@@ -196,7 +207,7 @@ const handlePostAnswer = async (request, givenData=null) =>{
 
   }
 
-  const lastAnswer = await answersService.getLastAnswerOfUser(user_uuid);
+  const lastAnswer = await cachedAnswersService.getLastAnswerOfUser(user_uuid);
   if (lastAnswer.length > 0){
     let last_answer_time = new Date(lastAnswer[0].created_at);
     let currentTime = new Date()
@@ -205,10 +216,15 @@ const handlePostAnswer = async (request, givenData=null) =>{
     }
   }
 
-  await answersService.createAnswer(user_uuid, content, question_id)
-  const answer = await answersService.getLastAnswerOfUser(user_uuid);
-  answer[0].total_votes = 0;
-  answerEvents.emit(question_id.toString(), answer[0]);
+  await cachedAnswersService.createAnswer(user_uuid, content, question_id)
+  const answer = await cachedAnswersService.getLastAnswerOfUser(user_uuid);
+  const data = {
+    "id": answer[0].id,
+    "total_votes": "0",
+    "content": answer[0].content,
+    "user_liked": false
+  }
+  answerEvents.emit(question_id.toString(), data);
 
   return new Response("OK", { status: 200 });
 }

@@ -5,11 +5,12 @@
     export let upvotes;
     export let isLiked;
     export let answerId;
+    export let listIndex;
+    export let increaseUpvote;
 
     let localUpvotes = parseInt(upvotes, 10); 
     const handleUpvote = async () =>{
-        localUpvotes += 1;
-        isLiked = true;
+        increaseUpvote(listIndex);
 
         let data = {
           user_id: $userUuid,
@@ -19,8 +20,6 @@
           body: JSON.stringify(data),
         });
     }
-    const urlParams = new URLSearchParams(window.location.search);
-
 </script>
 
 <div class="bg-white text-gray-800 rounded-lg p-6 shadow-lg transition-all duration-300 ease-in-out answerCard">
@@ -43,7 +42,7 @@
               </svg>
             </button>
           {/if}
-        <span id="upvote-text" class="ml-2 text-sm text-gray-600">{localUpvotes}</span> <!-- Upvote Count -->
+        <span id="upvote-text" class="ml-2 text-sm text-gray-600">{upvotes}</span> <!-- Upvote Count -->
       </div>
     </div>
   </div>

@@ -50,6 +50,11 @@
       errorMessage = message;
       showError = true;
     }
+
+    const increaseUpvote = (listIndex) =>{
+      answers[listIndex].total_votes = (parseInt(answers[listIndex].total_votes) + 1).toString();
+      answers[listIndex].user_liked = true;
+    }
   
     onMount(() => {
       getAnswers();
@@ -96,8 +101,8 @@
       <!-- Answer List -->
       <section class="space-y-6">
           <div class="grid grid-cols-1 gap-4 mt-12 mb-24">
-            {#each answers as answer}
-              <AnswerCard answer={answer.content} upvotes={answer.total_votes} isLiked={answer.user_liked} answerId={answer.id}> </AnswerCard>
+            {#each answers as answer, index}
+              <AnswerCard answer={answer.content} upvotes={answer.total_votes} isLiked={answer.user_liked} answerId={answer.id} listIndex={index} increaseUpvote={increaseUpvote}> </AnswerCard>
             {/each}
           </div>
       </section>

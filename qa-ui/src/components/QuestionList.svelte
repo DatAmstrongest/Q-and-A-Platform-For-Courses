@@ -47,6 +47,11 @@
     showError = true;
   }
 
+  const increaseUpvote = (listIndex) =>{
+      questions[listIndex].total_votes = (parseInt(questions[listIndex].total_votes) + 1).toString();
+      questions[listIndex].user_liked = true;
+    }
+
   onMount(() => {
     getQuestions();
     const eventSource = new EventSource(`/api/courses/${course_id}/questions/sse`);
@@ -92,8 +97,8 @@
     <!-- Question List -->
     <section class="space-y-6">
         <div class="grid grid-cols-4 gap-4 mt-12 mb-24">
-          {#each questions as question}
-            <QuestionCard question={question.content} upvotes={question.total_votes} isLiked={question.user_liked} questionId={question.id}> </QuestionCard>
+          {#each questions as question, index}
+            <QuestionCard question={question.content} upvotes={question.total_votes} isLiked={question.user_liked} questionId={question.id} listIndex={index} increaseUpvote={increaseUpvote}> </QuestionCard>
           {/each}
         </div>
     </section>

@@ -5,11 +5,11 @@
     export let upvotes;
     export let isLiked;
     export let questionId;
+    export let listIndex;
+    export let increaseUpvote;
 
-    let localUpvotes = parseInt(upvotes, 10); 
     const handleUpvote = async () =>{
-        localUpvotes += 1;
-        isLiked = true;
+        increaseUpvote(listIndex);
 
         let data = {
           user_id: $userUuid,
@@ -19,9 +19,6 @@
           body: JSON.stringify(data),
         });
     }
-    const urlParams = new URLSearchParams(window.location.search);
-    let course_name = urlParams.get('course_name') || 'No query parameter found';
-
 </script>
 
 <div class="bg-white text-gray-800 rounded-lg p-6 shadow-lg transition-all duration-300 ease-in-out questionCard">
@@ -44,7 +41,7 @@
               </svg>
             </button>
           {/if}
-        <span class="ml-2 text-sm text-gray-600">{localUpvotes}</span> <!-- Upvote Count -->
+        <span class="ml-2 text-sm text-gray-600">{upvotes}</span> <!-- Upvote Count -->
       </div>
     </div>
     <a id="view-answers-{questionId}" href="/questions/{questionId}?question_content={question}"  class="text-indigo-600 hover:underline">View Answers</a>
