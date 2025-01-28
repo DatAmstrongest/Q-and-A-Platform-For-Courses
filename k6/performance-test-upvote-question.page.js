@@ -1,5 +1,15 @@
 import http from "k6/http";
 
+// Function to generate a random string
+function randomString(length) {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
 export const options = {
   duration: "10s",
   vus: 10,
@@ -8,6 +18,6 @@ export const options = {
 
 export default function () {
   http.post("http://localhost:7800/api/questions/1/like", JSON.stringify({
-    user_uuid:"1111",
+    user_uuid: randomString(12),
   }));
 }
