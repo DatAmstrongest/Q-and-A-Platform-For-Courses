@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: qa-ui
+  namespace: default
+spec:
+  selector:
+    app: qa-ui
+  ports:
+    - name: qa-ui-service
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

@@ -1,20 +1,20 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: qa-ui
+  name: nginx-service
   namespace: default
   labels:
     operated-prometheus: "true"  # Added label for Prometheus scraping
 spec:
   selector:
-    app: qa-ui
+    app: nginx
   ports:
-    - name: qa-ui-service
+    - name: nginx-web-service
       protocol: TCP
-      port: 3000
-      targetPort: 3000
-    - name: prometheus-exporter
+      port: 7800
+      targetPort: 7800
+    - name: nginx-metrics-service
       protocol: TCP
-      port: 9100
-      targetPort: 9100
-
+      port: 9113
+      targetPort: 9113
+  type: LoadBalancer

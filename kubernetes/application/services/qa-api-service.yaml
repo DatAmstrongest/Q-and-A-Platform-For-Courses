@@ -3,8 +3,6 @@ kind: Service
 metadata:
   name: qa-api
   namespace: default
-  labels:
-    operated-prometheus: "true"
 spec:
   selector:
     app: qa-api
@@ -13,7 +11,3 @@ spec:
       protocol: TCP
       port: 7777
       targetPort: 7777
-    - name: prometheus-exporter
-      protocol: TCP
-      port: 9101
-      targetPort: 9100

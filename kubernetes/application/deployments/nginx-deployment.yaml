@@ -14,6 +14,12 @@ spec:
         app: nginx
     spec:
       containers:
+      - name: nginx-exporter
+        image: nginx/nginx-prometheus-exporter:latest
+        args:
+          - -nginx.scrape-uri=http://localhost:7800/stub_status
+        ports:
+        - containerPort: 9113
       - name: nginx
         image: nginx:latest
         ports:

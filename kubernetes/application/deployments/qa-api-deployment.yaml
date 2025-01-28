@@ -14,10 +14,6 @@ spec:
         app: qa-api
     spec:
       containers:
-        - name: prometheus-exporter
-          image: prom/node-exporter  # A common Prometheus exporter
-          ports:
-            - containerPort: 9100
         - name: qa-api
           image: qa-api:latest
           imagePullPolicy: Never

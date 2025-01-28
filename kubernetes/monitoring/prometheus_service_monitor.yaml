@@ -7,10 +7,7 @@ metadata:
 spec:
   endpoints:
   - interval: 30s
-    targetPort: 9100
-    path: /metrics
-  - interval: 30s
-    targetPort: 9101
+    targetPort: 9113
     path: /metrics
   namespaceSelector:
     any: true
