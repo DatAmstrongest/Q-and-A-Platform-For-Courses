@@ -32,6 +32,22 @@ INSERT INTO questions (course_id, content, user_uuid) VALUES
 (1, 'What is a schema in a database?', '550e8400-e29b-41d4-a716-446655440008'),
 (1, 'What is the purpose of database indexing?', '550e8400-e29b-41d4-a716-446655440009');
 
+-- Insert Questions for "Operating Systems"
+INSERT INTO questions (course_id, content, user_uuid) VALUES
+(2, 'What is a process?', '550e8400-e29b-41d4-a716-446655440100'),
+(2, 'What is a thread?', '550e8400-e29b-41d4-a716-446655440101'),
+(2, 'Explain the concept of deadlock.', '550e8400-e29b-41d4-a716-446655440102'),
+(2, 'What is virtual memory?', '550e8400-e29b-41d4-a716-446655440103'),
+(2, 'What are system calls?', '550e8400-e29b-41d4-a716-446655440104');
+
+-- Insert Questions for "Machine Learning"
+INSERT INTO questions (course_id, content, user_uuid) VALUES
+(3, 'What is supervised learning?', '550e8400-e29b-41d4-a716-446655440200'),
+(3, 'What is unsupervised learning?', '550e8400-e29b-41d4-a716-446655440201'),
+(3, 'Explain the concept of overfitting.', '550e8400-e29b-41d4-a716-446655440202'),
+(3, 'What is a neural network?', '550e8400-e29b-41d4-a716-446655440203'),
+(3, 'What is a decision tree?', '550e8400-e29b-41d4-a716-446655440204');
+
 -- Insert Answers for "Database Systems"
 INSERT INTO answers (question_id, content, user_uuid) VALUES
 (1, 'Normalization reduces redundancy and improves data integrity.', '550e8400-e29b-41d4-a716-446655440020'),
@@ -86,6 +102,22 @@ INSERT INTO answers (question_id, content, user_uuid) VALUES
 (2, 'Indexes can be used to enforce uniqueness in a column.', '550e8400-e29b-41d4-a716-446655440084'),
 (2, 'They can also be used to speed up sorting and filtering operations.', '550e8400-e29b-41d4-a716-446655440085');
 
+-- Insert Answers for "Operating Systems"
+INSERT INTO answers (question_id, content, user_uuid) VALUES
+(25, 'A process is an instance of a program in execution.', '550e8400-e29b-41d4-a716-446655440105'),
+(26, 'A thread is the smallest unit of a process that can be scheduled.', '550e8400-e29b-41d4-a716-446655440106'),
+(27, 'Deadlock is a situation where a set of processes are blocked because each process is holding a resource and waiting for another resource acquired by some other process.', '550e8400-e29b-41d4-a716-446655440107'),
+(28, 'Virtual memory is a memory management technique that provides an "idealized abstraction of the storage resources" that are actually available on a given machine.', '550e8400-e29b-41d4-a716-446655440108'),
+(29, 'System calls provide the interface between a process and the operating system.', '550e8400-e29b-41d4-a716-446655440109');
+
+-- Insert Answers for "Machine Learning"
+INSERT INTO answers (question_id, content, user_uuid) VALUES
+(30, 'Supervised learning is a type of machine learning where the model is trained on labeled data.', '550e8400-e29b-41d4-a716-446655440205'),
+(31, 'Unsupervised learning is a type of machine learning where the model is trained on unlabeled data.', '550e8400-e29b-41d4-a716-446655440206'),
+(32, 'Overfitting occurs when a model learns the training data too well, including the noise, and performs poorly on new data.', '550e8400-e29b-41d4-a716-446655440207'),
+(33, 'A neural network is a series of algorithms that attempt to recognize underlying relationships in a set of data through a process that mimics the way the human brain operates.', '550e8400-e29b-41d4-a716-446655440208'),
+(34, 'A decision tree is a decision support tool that uses a tree-like model of decisions and their possible consequences.', '550e8400-e29b-41d4-a716-446655440209');
+
 -- Insert Upvotes for Questions
 INSERT INTO question_upvotes (question_id, user_uuid) VALUES
 (1, '550e8400-e29b-41d4-a716-446655440045'), -- Upvote for "What is normalization?"
@@ -95,7 +127,17 @@ INSERT INTO question_upvotes (question_id, user_uuid) VALUES
 (2, '550e8400-e29b-41d4-a716-446655440049'), 
 (3, '550e8400-e29b-41d4-a716-446655440050'), -- Upvote for "What is ACID in databases?"
 (4, '550e8400-e29b-41d4-a716-446655440051'), -- Upvote for "What are database constraints?"
-(5, '550e8400-e29b-41d4-a716-446655440052'); -- Upvote for "Explain the concept of a primary key."
+(5, '550e8400-e29b-41d4-a716-446655440052'), -- Upvote for "Explain the concept of a primary key."
+(25, '550e8400-e29b-41d4-a716-446655440110'), -- Upvote for "What is a process?"
+(26, '550e8400-e29b-41d4-a716-446655440111'), -- Upvote for "What is a thread?"
+(27, '550e8400-e29b-41d4-a716-446655440112'), -- Upvote for "Explain the concept of deadlock."
+(28, '550e8400-e29b-41d4-a716-446655440113'), -- Upvote for "What is virtual memory?"
+(29, '550e8400-e29b-41d4-a716-446655440114'), -- Upvote for "What are system calls?"
+(30, '550e8400-e29b-41d4-a716-446655440210'), -- Upvote for "What is supervised learning?"
+(31, '550e8400-e29b-41d4-a716-446655440211'), -- Upvote for "What is unsupervised learning?"
+(32, '550e8400-e29b-41d4-a716-446655440212'), -- Upvote for "Explain the concept of overfitting."
+(33, '550e8400-e29b-41d4-a716-446655440213'), -- Upvote for "What is a neural network?"
+(34, '550e8400-e29b-41d4-a716-446655440214'); -- Upvote for "What is a decision tree?"
 
 -- Insert Upvotes for Answers
 INSERT INTO answer_upvotes (answer_id, user_uuid) VALUES
@@ -106,4 +148,14 @@ INSERT INTO answer_upvotes (answer_id, user_uuid) VALUES
 (3, '550e8400-e29b-41d4-a716-446655440057'), -- Upvote for Answer 3
 (4, '550e8400-e29b-41d4-a716-446655440058'), -- Upvote for Answer 4
 (5, '550e8400-e29b-41d4-a716-446655440059'), -- Upvote for Answer 5
-(6, '550e8400-e29b-41d4-a716-446655440060'); -- Upvote for Answer 6
+(6, '550e8400-e29b-41d4-a716-446655440060'), -- Upvote for Answer 6
+(45, '550e8400-e29b-41d4-a716-446655440115'), -- Upvote for Answer 1
+(46, '550e8400-e29b-41d4-a716-446655440116'), -- Upvote for Answer 2
+(47, '550e8400-e29b-41d4-a716-446655440117'), -- Upvote for Answer 3
+(48, '550e8400-e29b-41d4-a716-446655440118'), -- Upvote for Answer 4
+(49, '550e8400-e29b-41d4-a716-446655440119'), -- Upvote for Answer 5
+(50, '550e8400-e29b-41d4-a716-446655440215'), -- Upvote for Answer 1
+(51, '550e8400-e29b-41d4-a716-446655440216'), -- Upvote for Answer 2
+(52, '550e8400-e29b-41d4-a716-446655440217'), -- Upvote for Answer 3
+(53, '550e8400-e29b-41d4-a716-446655440218'), -- Upvote for Answer 4
+(54, '550e8400-e29b-41d4-a716-446655440219'); -- Upvote for Answer 5
