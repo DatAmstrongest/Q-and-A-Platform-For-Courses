@@ -5,17 +5,14 @@ Server sent events are used to dynamically update question and answer lists. Whe
 ### Pagination
 When user reached to the end of the page, frontend automatically increases page size and sends it to the qa-api to get new batch of questions and answers.
 
-### Caching
-Some queries are cached by using Redis, it decreases the latency of the program because qa-api access less frequently to database
-
-### Indexing
-Indexes are created on updated_at column of questions and answers because queries that are selecting answers and questions are the mostly used and these queries must be retieved sorted by updated_at
-
 ### Monitoring
 To collect metrics about HTTP request, an exported defined in NGINX deployment. Prometheus Service Monitor targets NGINX metrics with label and port. These metrics are exposed to Grafana for visualization.
 
 ### Scaling
 Horizontal Pod Autoscaler is created for qa-api. Kubernetes can scale qa-api till 5 replicas to reach 50% CPU utilization.
+
+### Dynamic Routes
+A different page created for each question list and answer list by using Astro's dynamic routes. `id` parameter is used to retrieve necessary answers and quetsions to show to the user.
 
 ## Possible Improvements
 1. New Horizontal Pod Autoscalers can be defined for other deployments like llm-api, qa-ui etc.

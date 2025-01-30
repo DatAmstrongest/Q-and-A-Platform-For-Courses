@@ -36,11 +36,9 @@ CREATE TABLE answer_upvotes (
     UNIQUE(answer_id, user_uuid)
 );
 
--- Indexes for sorting by recency
+
 CREATE INDEX idx_questions_recency ON questions((updated_at) DESC);
 CREATE INDEX idx_answers_recency ON answers((updated_at) DESC);
-
--- Additional indexes for optimizing queries
 CREATE INDEX idx_questions_course_id ON questions(course_id);
 CREATE INDEX idx_answers_question_id ON answers(question_id);
 CREATE INDEX idx_question_upvotes_question_id_user_uuid ON question_upvotes(question_id, user_uuid);

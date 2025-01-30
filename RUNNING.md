@@ -1,5 +1,8 @@
-## Docker compose deployment
+## Docker compose development deployment
 1. docker compose up --build
+
+## Docker compose production deployment
+1. docker compose -f docker-compose.prod.yml up -d
 
 ## Kubernetes Deployment
 
